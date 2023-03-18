@@ -1,14 +1,21 @@
 import { useGetExchangeQuery } from "../../redux/books/booksApi";
 
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { FormControl, InputLabel, Select, TextField, MenuItem } from "@mui/material";
 import { useState } from "react";
 
 const HomePage = () => {
   const [currency, setCurrency] = useState("UAH");
+  const [uah, setUah] = useState(0);
+  const [usd, setUsd] = useState(0);
+  const [eur, setEur] = useState(0);
 
-  const { data: exchange } = useGetExchangeQuery();
-  console.log(exchange);
+  const { data: exchange } = useGetExchangeQuery(currency);
+  // console.log(exchange);
+  // console.log(exchange.rates[currency]);
 
+  const valuta = exchange?.rates ? [exchange.rates].filter((item) => Object.values(item) !== 1) : [];
+
+  console.log(valuta);
   return (
     <div className="container">
       <h2>HomePage page</h2>
@@ -39,6 +46,28 @@ const HomePage = () => {
           </div>
         </>
       )}
+
+      <div>
+        <TextField
+          // type="number"
+          id="outlined-basic"
+          label="Outlined"
+          variant="outlined"
+          value={uah}
+          onChange={(e) => {
+            if (e.target.value.match(/^[0-9]*$/)) {
+              setUah(e.target.value);
+            }
+          }}
+        />
+        {exchange?.rates && (
+          <>
+            <div>{uah * exchange.rates.USD}</div>
+            <div>{uah * exchange.rates.EUR}</div>
+            <div>{uah * exchange.rates.UAH}</div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
